@@ -8,6 +8,8 @@ import winreg
 import math
 import time
 import subprocess
+import tkinter as tk
+from tkinter import messagebox
 #执行次数(注册表读取实现)
 def is_first_run():
     key_path = r"Software\zhr\Flower_clock"
@@ -29,10 +31,21 @@ def is_first_run():
 def is_first_run():
     return True
 #初始化变量
-project_path=os.getcwd()
-pointer=0
-I_F_R_N=is_first_run()
+project_path = os.getcwd()
+pointer = 0
+I_F_R_N = is_first_run()
 clock = pygame.time.Clock()
+flower_path = project_path + "images/flowers_image/"
+flowers_CN_EN_OT = {
+    1:["牵牛花","Ipomoea_nil",5],
+    2:["蔷薇","Rosa_spp",8],
+    3:["芍药","Paeonia_lactiflora",9],
+    4:["睡莲","Nymphaea_spp",10],
+    5:["万寿菊","Tagetes_erecta",12],
+    6:["紫茉莉","Mirabilis_jalapa",17],
+    7:["夜来香","Telosma_cordata",20],
+    8:["昙花","Epiphyllum_oxypetalum",21]
+}
 #设置窗口宽高、标题
 WIDTH = 1400
 HEIGHT = 700
@@ -45,7 +58,7 @@ def update():
     global icon_set,pointer
     if not icon_set:
         try:
-            icon = pygame.image.load('images/花钟.ico')
+            icon = pygame.image.load('images/Flower_clock.ico')
             pygame.display.set_icon(icon)
             icon_set = True
         except:
@@ -74,15 +87,23 @@ def draw():
         bg.draw()
 #最终调用
 pgzrun.go()
-if turtle.textinput("确认退出","请输入yes以确认退出：") == "yes":
-    turtle.bye()
-    sys.exit(0)
-else:
-    turtle.bye()
-    pygame.mixer.init()
-    if I_F_R_N:
-        music.play(project_path+"/music/1.mp3")
-    pgzrun.go()
+#退出确认
+def exit_yes_or_no():
+    root = tk.Tk()
+    root.withdraw()
+    # 弹出对话框并获取选择
+    choice = messagebox.askyesno("确认退出", "是否要退出程序？")
+    # 根据选择输出结果
+    if choice:
+        sys.exit(0)
+    else:
+        pygame.mixer.init()
+        if I_F_R_N:
+            music.play(project_path+"/music/1.mp3")
+            pgzrun.go()
+            exit_yes_or_no()
+        root.destroy()
+exit_yes_or_no()
     
 
 
