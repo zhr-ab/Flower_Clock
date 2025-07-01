@@ -1,110 +1,66 @@
-﻿#导入依赖
-import pygame
-import pgzrun
-import os
-import sys
-import turtle
-import winreg
-import math
-import time
-import subprocess
+﻿import sys
 import tkinter as tk
 from tkinter import messagebox
-#执行次数(注册表读取实现)
-def is_first_run():
-    key_path = r"Software\zhr\Flower_clock"
-    value_name = "FirstRun"
-    try:
-        # 尝试打开现有键
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_READ)
-        winreg.CloseKey(key)
-        return False
-    except FileNotFoundError:
-        # 创建新键并写入标记值
-        key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path)
-        winreg.SetValueEx(key, value_name, 0, winreg.REG_SZ, "1")
-        winreg.CloseKey(key)
-        return True
-    except Exception:
-        return False  # 防止权限不足等情况导致崩溃
-#测试用，新手引导开发完成后需删除
-def is_first_run():
-    return True
-#初始化变量
-project_path = os.getcwd()
-pointer = 0
-I_F_R_N = is_first_run()
-clock = pygame.time.Clock()
-flower_path = project_path + "images/flowers_image/"
-flowers_CN_EN_OT = {
-    1:["牵牛花","Ipomoea_nil",5],
-    2:["蔷薇","Rosa_spp",8],
-    3:["芍药","Paeonia_lactiflora",9],
-    4:["睡莲","Nymphaea_spp",10],
-    5:["万寿菊","Tagetes_erecta",12],
-    6:["紫茉莉","Mirabilis_jalapa",17],
-    7:["夜来香","Telosma_cordata",20],
-    8:["昙花","Epiphyllum_oxypetalum",21]
-}
-#设置窗口宽高、标题
-WIDTH = 1400
-HEIGHT = 700
-TITLE = "Flower_clock"
-#设置图标模式（真（True）代表不设置图标；假（False）代表设置图标）
-icon_set = False
-#循环更新
-def update():
-    #设置窗口图标
-    global icon_set,pointer
-    if not icon_set:
+import time
+import ctypes
+with open('run.txt', 'w') as file:
+    file.write("0")
+def main():
+    #导入依赖
+    import pygame
+    import pgzrun
+    import os
+    import winreg
+    import math
+    import subprocess
+    with open('run.txt', 'w') as file:
+        file.write("1")
+    #执行次数(注册表读取实现)
+    def is_first_run():
+        key_path = r"Software\zhr\Flower_clock"
+        value_name = "FirstRun"
         try:
-            icon = pygame.image.load('images/Flower_clock.ico')
-            pygame.display.set_icon(icon)
-            icon_set = True
-        except:
-            pass
-    #指针转动
-    dt = clock.tick(60) / 1000.0  # 获取帧间隔时间(秒)
-    pointer += 6 * dt  # 按实际时间增量旋转
-#播放音频
-if I_F_R_N:
-    music.play(project_path+"/music/1.mp3")
-#创建角色
-bg=Actor(project_path+"/images/bg.png")
-#绘制角色
-def draw():
-    global pointer
-    screen.clear()
-    radius = 100 / 2  # 半径
-    end_x = 700 + radius * math.cos(math.radians(pointer))  # 末端x坐标
-    end_y = 400 + radius * math.sin(math.radians(pointer))  # 末端y坐标
-
-    if I_F_R_N:
-        screen.draw.filled_circle((700, 400), 55, (255, 255, 255))
-        screen.draw.filled_circle((700, 400), 50, (0, 0, 0))
-        pygame.draw.line(screen.surface, (255, 255, 255), (end_x, end_y), (700,400), 5)
-    else:
-        bg.draw()
-#最终调用
-pgzrun.go()
-#退出确认
-def exit_yes_or_no():
+            # 尝试打开现有键
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_READ)
+            winreg.CloseKey(key)
+            return False
+        except FileNotFoundError:
+            # 创建新键并写入标记值
+            key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, key_path)
+            winreg.SetValueEx(key, value_name, 0, winreg.REG_SZ, "1")
+            winreg.CloseKey(key)
+            return True
+        except Exception:
+            return True
+    #参数设定
+    version = ("2025.0.0.1")
+if __name__ == "__main__":
+    #初始化各模块
+    # 创建主窗口但不显示
     root = tk.Tk()
     root.withdraw()
-    # 弹出对话框并获取选择
-    choice = messagebox.askyesno("确认退出", "是否要退出程序？")
-    # 根据选择输出结果
-    if choice:
-        sys.exit(0)
-    else:
-        pygame.mixer.init()
-        if I_F_R_N:
-            music.play(project_path+"/music/1.mp3")
-            pgzrun.go()
-            exit_yes_or_no()
+    #获取管理员权限
+    if ctypes.windll.shell32.IsUserAnAdmin():
+        # 销毁主窗口
         root.destroy()
-exit_yes_or_no()
-    
+        main()
+    else:  
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
+        time.sleep(2)
+        # 弹出提示窗口
+        while True:
+            with open('run.txt', 'r') as file:
+                if file.read() == "0":
+                    result = messagebox.askretrycancel("权限错误", "获取管理员权限失败，是否重试？")
+                    if not result:
+                        sys.exit(0)
+                    else:
+                        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
+                else:
+                    sys.exit(0)
+
+
+ 
 
 
 
