@@ -7,7 +7,8 @@ import ctypes
 import os
 with open('run.txt', 'w') as file:
     file.write("0")
-def main():
+def initialize():
+    global is_first_run
     #导入依赖2
     import pygame
     from PIL import Image, ImageTk
@@ -27,7 +28,7 @@ def main():
     # 加载图片
     try:
         # 替换为你的图片路径
-        splash_image = pygame.image.load(r"images\start.bmp")
+        splash_image = pygame.image.load("images/start.bmp")
         # 调整图片大小以适应窗口
         splash_image = pygame.transform.scale(splash_image, (window_width, window_height))
     except pygame.error as e:
@@ -136,15 +137,6 @@ def main():
     #参数设定
     version = ("2025.0.0.1")
     pygame.quit()
-
-    import pgzrun
-    WIDTH = 1400
-    HEIGHT = 800
-    def draw():
-        screen.clear()
-    pgzrun.go()
-    # 销毁tkinter主窗口
-    root.destroy()
 if __name__ == "__main__":
     #初始化各模块
     # 创建主窗口但不显示
@@ -152,7 +144,23 @@ if __name__ == "__main__":
     root.withdraw()
     #获取管理员权限
     if ctypes.windll.shell32.IsUserAnAdmin():
-        main()
+        is_first_run = None
+        initialize()
+        import pgzrun
+        WIDTH = 1400
+        HEIGHT = 800
+        TITLE = "Flower Clock"
+        ICON = "images/Flower_clock.ico"  # 确保路径正确
+
+        def draw():
+            screen.clear()
+            if is_first_run:
+                screen.fill((255,255,255))
+        def update():
+            pass
+        pgzrun.go()
+        # 销毁tkinter主窗口
+        root.destroy()
     else:  
         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
         time.sleep(10)
@@ -162,7 +170,23 @@ if __name__ == "__main__":
                 if file.read() == "0":
                     result = messagebox.askretrycancel("权限错误", "获取管理员权限失败，是否重试？")
                     if not result:
-                        main()
+                        is_first_run = None
+                        initialize()
+                        import pgzrun
+                        WIDTH = 1400
+                        HEIGHT = 800
+                        TITLE = "Flower Clock"
+                        ICON = "images/Flower_clock.ico"  # 确保路径正确
+
+                        def draw():
+                            screen.clear()
+                            if is_first_run:
+                                screen.fill((255,255,255))
+                        def update():
+                            pass
+                        pgzrun.go()
+                        # 销毁tkinter主窗口
+                        root.destroy()
                     else:
                         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
                 else:
