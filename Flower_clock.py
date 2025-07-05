@@ -1,18 +1,16 @@
-﻿import sys
+﻿#导入依赖1
+import sys
 import tkinter as tk
 from tkinter import messagebox
 import time
 import ctypes
 import os
-import winreg  # 将winreg导入移到顶部
 with open('run.txt', 'w') as file:
     file.write("0")
 def main():
-    #导入依赖
-    import math
-    import subprocess
+    #导入依赖2
     import pygame
-    from PIL import Image, ImageTk  # 确保已安装Pillow库
+    from PIL import Image, ImageTk
     
     with open('run.txt', 'w') as file:
         file.write("1")
@@ -42,6 +40,11 @@ def main():
     pygame.display.flip()
 
     #初始化程序
+    #导入依赖3
+    import math
+    import subprocess
+    import mysql.connector
+    import winreg
     #执行次数(注册表读取实现)
     key_path = r"Software\zhr\Flower_clock"
     value_name = "FirstRun"
@@ -58,12 +61,90 @@ def main():
         is_first_run = True
     except Exception:
         is_first_run = True
+    # 数据库增、删、改、查
+    # 数据库配置
+    DB_CONFIG = {
+        "host": "apiflowerclock.dpdns.org",
+        "port": 3306,
+        "user": "hanhan",
+        "password": "Zzzhhhrrr0624@flowerclockSQL",
+        "database": "flowerclockSQL_1"
+    }
+
+    def create_record(sql: str, params: tuple = None) -> int:
+        """写入数据（增）"""
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute(sql, params)
+            conn.commit()
+            return cursor.rowcount  # 返回受影响行数
+        except mysql.connector.Error as err:
+            messagebox.showerror(f"数据库写入失败，错误信息（如果需要的话）：{err}")
+            return 0
+        finally:
+            if 'conn' in locals() and conn.is_connected():
+                cursor.close()
+                conn.close()
+
+    def read_record(sql: str, params: tuple = None) -> list:
+        """读取数据（查）"""
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute(sql, params)
+            return cursor.fetchall()  # 返回结果列表
+        except mysql.connector.Error as err:
+            messagebox.showerror(f"数据库读取失败，错误信息（如果需要的话）：{err}")
+            return []
+        finally:
+            if 'conn' in locals() and conn.is_connected():
+                cursor.close()
+                conn.close()
+
+    def update_record(sql: str, params: tuple = None) -> int:
+        """更新数据（改）"""
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute(sql, params)
+            conn.commit()
+            return cursor.rowcount  # 返回受影响行数
+        except mysql.connector.Error as err:
+            messagebox.showerror(f"数据库更新失败，错误信息（如果需要的话）：{err}")
+            return 0
+        finally:
+            if 'conn' in locals() and conn.is_connected():
+                cursor.close()
+                conn.close()
+
+    def delete_record(sql: str, params: tuple = None) -> int:
+        """删除数据（删）"""
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute(sql, params)
+            conn.commit()
+            return cursor.rowcount  # 返回受影响行数
+        except mysql.connector.Error as err:
+            messagebox.showerror(f"数据库删除失败，错误信息（如果需要的话）：{err}")
+            return 0
+        finally:
+            if 'conn' in locals() and conn.is_connected():
+                cursor.close()
+                conn.close()
     #参数设定
     version = ("2025.0.0.1")
     pygame.quit()
-    
-    import pgzrun
 
+    import pgzrun
+    WIDTH = 1400
+    HEIGHT = 800
+    def draw():
+        screen.clear()
+    pgzrun.go()
+    # 销毁tkinter主窗口
+    root.destroy()
 if __name__ == "__main__":
     #初始化各模块
     # 创建主窗口但不显示
