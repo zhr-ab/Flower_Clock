@@ -44,6 +44,9 @@ def initialize():
     #导入依赖3
     import math
     import subprocess
+    # 在导入 mysql.connector 前添加以下代码忽略特定警告
+    import warnings
+    warnings.filterwarnings("ignore", message=r'"is" with a literal. Did you mean "=="?',category=SyntaxWarning,module=r'mysql\.connector\.(abstracts|optionfiles)')
     import mysql.connector
     import winreg
     #执行次数(注册表读取实现)
@@ -136,6 +139,42 @@ def initialize():
                 conn.close()
     #参数设定
     version = ("2025.0.0.1")
+    items = language_tags = [
+        'zh-cn', 'zh-tw', 'zh-hk', 'zh-sg', 'en-us', 'en-gb', 'en-au', 'en-ca', 'en-in', 'es-es',
+        'es-mx', 'es-ar', 'fr-fr', 'fr-ca', 'fr-be', 'ar-sa', 'ar-eg', 'ar-ma', 'hi-in', 'pt-pt',
+        'pt-br', 'ru-ru', 'ja-jp', 'de-de', 'de-at', 'ko-kr', 'it-it', 'nl-nl', 'nl-be', 'tr-tr',
+        'vi-vn', 'th-th', 'pl-pl', 'sv-se', 'da-dk', 'no-no', 'fi-fi', 'id-id', 'ms-my', 'fil-ph',
+        'el-gr', 'cs-cz', 'hu-hu', 'ro-ro', 'bg-bg', 'uk-ua', 'he-il', 'fa-ir', 'ur-pk', 'bn-bd',
+        'ta-in', 'te-in', 'mr-in', 'gu-in', 'kn-in', 'ml-in', 'or-in', 'pa-in', 'si-lk', 'km-kh',
+        'lo-la', 'my-mm', 'ne-np', 'uz-uz', 'kk-kz', 'az-az', 'ka-ge', 'hy-am', 'et-ee', 'lv-lv',
+        'lt-lt', 'sk-sk', 'sl-si', 'hr-hr', 'sr-rs', 'mk-mk', 'sq-al', 'sw-ke', 'am-et', 'yo-ng',
+        'ha-ng', 'ig-ng', 'zu-za', 'xh-za', 'af-za', 'st-ls', 'rw-rw', 'mg-mg', 'eu-es', 'ca-es',
+        'gl-es', 'cy-gb', 'ga-ie', 'gd-gb', 'mt-mt', 'is-is', 'lb-lu', 'bo-cn', 'ug-cn', 'mn-mn'
+    ]
+    language_native_with_region = [
+        "中文(中国)", "中文(台灣)", "中文(香港)", "中文(新加坡)", "English(United States)",
+        "English(United Kingdom)", "English(Australia)", "English(Canada)", "English(India)", "español(España)",
+        "español(México)", "español(Argentina)", "français(France)", "français(Canada)", "français(Belgique)",
+        "العربية(السعودية)", "العربية(مصر)", "العربية(المغرب)", "हिन्दी(भारत)", "português(Portugal)",
+        "português(Brasil)", "русский(Россия)", "日本語(日本)", "Deutsch(Deutschland)", "Deutsch(Österreich)",
+        "한국어(대한민국)", "italiano(Italia)", "Nederlands(Nederland)", "Nederlands(België)", "Türkçe(Türkiye)",
+        "Tiếng Việt(Việt Nam)", "ไทย(ประเทศไทย)", "polski(Polska)", "svenska(Sverige)", "dansk(Danmark)",
+        "norsk(Norge)", "suomi(Suomi)", "Bahasa Indonesia(Indonesia)", "Bahasa Melayu(Malaysia)", "Filipino(Pilipinas)",
+        "ελληνικά(Ελλάδα)", "čeština(Česko)", "magyar(Magyarország)", "română(România)", "български(България)",
+        "українська(Україна)", "עברית(ישראל)", "فارسی(ایران)", "اردو(پاکستان)", "বাংলা(বাংলাদেশ)",
+        "தமிழ்(இந்தியா)", "తెలుగు(భారతదేశం)", "मराठी(भारत)", "ગુજરાતી(ભારત)", "ಕನ್ನಡ(ಭಾರತ)",
+        "മലയാളം(ഇന്ത്യ)", "ଓଡ଼ିଆ(ଭାରତ)", "ਪੰਜਾਬੀ(ਭਾਰਤ)", "සිංහල(ශ්‍රී ලංකාව)", "ភាសាខ្មែរ(កម្ពុជា)",
+        "ພາສາລາວ(ລາວ)", "မြန်မာဘာသာ(မြန်မာ)", "नेपाली(नेपाल)", "Oʻzbekcha(Oʻzbekiston)", "қазақ тілі(Қазақстан)",
+        "azərbaycan dili(Azərbaycan)", "ქართული(საქართველო)", "հայերեն(Հայաստան)", "eesti(Eesti)", "latviešu(Latvija)",
+        "lietuvių(Lietuva)", "slovenčina(Slovensko)", "slovenščina(Slovenija)", "hrvatski(Hrvatska)", "српски(Србија)",
+        "македонски(Северна Македонија)", "shqip(Shqipëria)", "Kiswahili(Kenya)", "አማርኛ(ኢትዮጵያ)", "Yorùbá(Nàìjíríà)",
+        "Hausa(Nijeriya)", "Igbo(Naịjịrịa)", "isiZulu(iNingizimu Afrika)", "isiXhosa(iMzantsi Afrika)", "Afrikaans(Suid-Afrika)",
+        "Sesotho(Lesotho)", "Kinyarwanda(U Rwanda)", "Malagasy(Madagasikara)", "euskara(Espainia)", "català(Espanya)",
+        "galego(España)", "Cymraeg(Prydain)", "Gaeilge(Éire)", "Gàidhlig(Alba)", "Malti(Malta)",
+        "íslenska(Ísland)", "Lëtzebuergesch(Lëtzebuerg)", "བོད་ཡིག(རྒྱ་ནག)", "ئۇيغۇر تىلى(جۇڭخۇا)", "монгол хэл(Монгол)"
+    ]
+
+    selected_index = -1
     pygame.quit()
     return [create_record,delete_record,update_record,read_record]
 if __name__ == "__main__":
