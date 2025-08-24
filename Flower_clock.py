@@ -1,10 +1,10 @@
 ﻿#导入依赖1
 import sys
-import tkinter as tk
-from tkinter import messagebox
 import time
 import ctypes
 import os
+import winreg
+from tkinter import messagebox
 with open('run.txt', 'w') as file:
     file.write("0")
 def initialize():
@@ -137,57 +137,61 @@ def initialize():
     #参数设定
     version = ("2025.0.0.1")
     pygame.quit()
+    return [create_record,delete_record,update_record,read_record]
 if __name__ == "__main__":
-    #初始化各模块
-    # 创建主窗口但不显示
-    root = tk.Tk()
-    root.withdraw()
-    #获取管理员权限
-    if ctypes.windll.shell32.IsUserAnAdmin():
-        is_first_run = None
-        initialize()
-        import pgzrun
-        WIDTH = 1400
-        HEIGHT = 800
-        TITLE = "Flower Clock"
-        ICON = "images/Flower_clock.ico"  # 确保路径正确
+    is_first_run = None
+    d = initialize()
+    create_record = d[0]
+    delete_record = d[1]
+    update_record = d[2]
+    read_record = d[3]
+    del d
+#主逻辑
+from PyQt5.QtWidgets import QApplication, QInputDialog
+import pgzrun
+WIDTH = 1400
+HEIGHT = 800
+TITLE = "Flower Clock"
+ICON = "images/Flower_clock.ico"  # 确保路径正确
 
-        def draw():
-            screen.clear()
-            if is_first_run:
-                screen.fill((255,255,255))
-        def update():
-            pass
-        pgzrun.go()
-        # 销毁tkinter主窗口
-        root.destroy()
-    else:  
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
-        time.sleep(10)
-        # 弹出提示窗口
-        while True:
-            with open('run.txt', 'r') as file:
-                if file.read() == "0":
-                    result = messagebox.askretrycancel("权限错误", "获取管理员权限失败，是否重试？")
-                    if not result:
-                        is_first_run = None
-                        initialize()
-                        import pgzrun
-                        WIDTH = 1400
-                        HEIGHT = 800
-                        TITLE = "Flower Clock"
-                        ICON = "images/Flower_clock.ico"  # 确保路径正确
+def draw():
+     screen.clear()
+     if is_first_run:
+         screen.fill((255,255,255))
+         def update():
+             pass
+pgzrun.go()
+# 创建应用实例（不显示主窗口）
+app = QApplication(sys.argv)
 
-                        def draw():
-                            screen.clear()
-                            if is_first_run:
-                                screen.fill((255,255,255))
-                        def update():
-                            pass
-                        pgzrun.go()
-                        # 销毁tkinter主窗口
-                        root.destroy()
-                    else:
-                        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
-                else:
-                    sys.exit(0)
+# 设置选项列表
+options = ["直接退出", "最小化到系统托盘"]
+
+# 弹出选项选择对话框
+selected, ok = QInputDialog.getItem(
+    None,  # 无父窗口
+    "关闭主窗口",  # 窗口标题
+    "是否退出程序？",  # 提示文本
+    options,  # 选项列表
+    0,  # 默认选中索引
+    False  # 是否可编辑
+)
+
+# 处理用户选择
+if ok and selected:
+    if options.index(selected) == 0:
+        #退出程序
+        sys.exit(app.exec_())
+        sys.exit(0)
+    else:
+        #打开托盘图标
+        os.system("tray.exe")
+        sys.exit(app.exec_())
+        sys.exit(0)
+else:
+    #退出程序
+    sys.exit(app.exec_())
+    sys.exit(0)
+
+
+

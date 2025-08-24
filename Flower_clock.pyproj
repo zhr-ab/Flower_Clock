@@ -3,13 +3,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0ecfaeef-0c2b-4bef-98ce-28e9643af7cb</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
-    <StartupFile>Flower_clock.py</StartupFile>
+    <ProjectHome>
+    </ProjectHome>
+    <StartupFile>Flower_Clock.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>Flower_clock</Name>
+    <Name>Flower_Clock</Name>
     <RootNamespace>Flower_clock</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
@@ -22,7 +23,8 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Flower_clock.py" />
+    <Compile Include="Flower_Clock.py" />
+    <Compile Include="tray.py" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
